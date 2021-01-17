@@ -1,8 +1,6 @@
 import json
 import logging
 from collections import defaultdict
-from itertools import groupby
-from operator import itemgetter
 
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
@@ -58,8 +56,14 @@ def login_view(request):
 
 
 @api_view(['GET'])
-@permission_classes([])  # todo: add auth
+@permission_classes([IsAuthenticated])
 def get_policy_using_policy_id(request, policy_id):
+    """
+    this function is used to retrieve a policy using policy id
+    :param request:
+    :param policy_id:
+    :return:
+    """
     try:
         policy = CustomerPolicyDetails.objects.get(policy_id=policy_id)
         message = "here's the policy details"
@@ -74,8 +78,14 @@ def get_policy_using_policy_id(request, policy_id):
 
 
 @api_view(['GET'])
-@permission_classes([])  # todo: add auth
+@permission_classes([IsAuthenticated])
 def get_policy_using_customer_id(request, customer_id):
+    """
+    this function is used to retrieve all the policies associated with a customer
+    :param request:
+    :param customer_id:
+    :return:
+    """
     try:
         policies = CustomerPolicyDetails.objects.filter(customer_id=customer_id)
         message = "here are the details"
@@ -92,8 +102,14 @@ def get_policy_using_customer_id(request, customer_id):
 
 
 @api_view(['GET', 'POST'])
-@permission_classes([])  # todo: add auth
+@permission_classes([IsAuthenticated])
 def edit_policy_details(request, policy_id):
+    """
+    this function is used to edit the details associated with a particular policy
+    :param request:
+    :param policy_id:
+    :return:
+    """
     try:
         policy = CustomerPolicyDetails.objects.get(policy_id=policy_id)
         updated_data = json.loads(request.body)
@@ -114,21 +130,23 @@ def edit_policy_details(request, policy_id):
 
 
 @api_view(['GET', 'POST'])
-@permission_classes([])  # todo: add auth
+@permission_classes([IsAuthenticated])
 def get_filtered_policies(request):
+    """
+    this function is used to filter policies based on a specific
+    region and send their counts respective to their months
+    :param request:
+    :return:
+    """
     try:
         data = defaultdict(lambda: 0)
-        # response = {}
         region = request.data.get('region')
         if region:
             policies = CustomerPolicyDetails.objects.filter(region=region)
             for policy in policies:
                 key = policy.date_of_purchase.month
                 data[key] += 1
-            # for k, v in data.items():
-            #     response[k] = len(v)
             return Response({
-                'message': "yay!",
                 'data': data
             })
 
