@@ -1,3 +1,6 @@
 venv/
 Data Set - Insurance Client.csv
 .idea/
+InsuranceDashboard/__pycache__/
+logics/__pycache__/
+logics/migrations/__pycache__/
